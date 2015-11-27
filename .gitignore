@@ -22,3 +22,9 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Dolphin file manager file (KDE)
+.directory
+
+# gofn bin folder
+.gofn_bin
