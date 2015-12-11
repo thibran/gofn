@@ -1,4 +1,4 @@
-version: 0.1
+version: 0.2
 
     Usage of gofn:
 
@@ -54,8 +54,9 @@ Compiled gofn functions contain a hash and the compilation date. When gofn is ex
 ### Tested on:
 
 * Ubuntu 15.10
+* Mac OS X El Capitan
 
 ### TODO
 
 * Write more tests
-* Get gofn working on Windows & Mac
+* Get gofn working on Windows

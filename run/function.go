@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/thibran/gofn/bindir"
@@ -55,7 +56,8 @@ func ParseAndCreateFunction() *Function {
 	var isList = flag.Bool("list", false, infoList)
 	flag.Parse()
 	if *isList {
-		listFunctionsAndExit()
+		printFunctions()
+		os.Exit(0)
 	}
 	// check if a function name is set
 	if checkName(f.Name) {
@@ -91,21 +93,33 @@ func randomlyRunClean() {
 	}
 }
 
-func listFunctionsAndExit() {
+func printFunctions() {
+	c := make(chan string, 20)
+	var wg sync.WaitGroup
 	sep := string(os.PathSeparator)
 	bindir, err := bindir.Path()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	for _, name := range info.ListFunctions(bindir) {
-		info, err := info.ByName(name, bindir, sep)
-		if err != nil {
-			continue
+	go func() {
+		for _, name := range info.ListFunctions(bindir) {
+			wg.Add(1)
+			go func(name, bindir, sep string) {
+				info, err := info.ByName(name, bindir, sep)
+				if err != nil {
+					return
+				}
+				time := info.Time.Format("2006-01-02 15:04")
+				c <- fmt.Sprintf("%s  %v  %s", name, time, info.Goversion)
+				wg.Done()
+			}(name, bindir, sep)
 		}
-		time := info.Time.Format("2006-01-02 15:04")
-		fmt.Printf("%s  %v  %s\n", name, time, info.Goversion)
+		wg.Wait()
+		close(c)
+	}()
+	for row := range c {
+		fmt.Println(row)
 	}
-	os.Exit(0)
 }
 
 func imports(new []string) string {

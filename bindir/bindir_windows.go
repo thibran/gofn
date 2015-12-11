@@ -1,5 +1,3 @@
-// +build !linux
-
 package bindir
 
 // GofnEnvNotSet returns the path to the gofn binary

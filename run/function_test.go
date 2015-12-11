@@ -22,3 +22,9 @@ func TestCheckName(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func BenchmarkPrintFunctions(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		printFunctions()
+	}
+}
